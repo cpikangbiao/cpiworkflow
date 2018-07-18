@@ -1,0 +1,25 @@
+entity ActivitiWorkflowFile {
+	workflowName String,
+	processDefinition AnyBlob,
+    processImage ImageBlob ,
+    uploadTime Instant,
+    uploadUser String
+}
+
+
+
+// Set pagination options
+paginate * with pagination
+
+dto * with mapstruct
+
+//Set service options to all except few
+service * with serviceImpl //except PartnerType
+
+filter * //except PartnerType
+
+// Set an angular suffix
+//angularSuffix * with crm
+
+microservice * with cpiworkflow
+//skipServer for Company

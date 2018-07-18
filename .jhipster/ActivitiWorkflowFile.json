@@ -1,0 +1,35 @@
+{
+    "fluentMethods": true,
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "workflowName",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "processDefinition",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "any"
+        },
+        {
+            "fieldName": "processImage",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "image"
+        },
+        {
+            "fieldName": "uploadTime",
+            "fieldType": "Instant"
+        },
+        {
+            "fieldName": "uploadUser",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20180718021007",
+    "entityTableName": "activiti_workflow_file",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": true,
+    "microserviceName": "cpiworkflow"
+}

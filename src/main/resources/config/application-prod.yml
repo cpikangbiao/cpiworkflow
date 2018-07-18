@@ -36,16 +36,16 @@ spring:
         stream:
             kafka:
                 binder:
-                    brokers: localhost
-                    zk-nodes: localhost
+                    brokers: 10.21.1.141:9092
+                    zk-nodes: 10.21.1.141:2181
             bindings:
                 output:
                     destination: topic-jhipster
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://localhost:3306/cpiworkflow?useUnicode=true&characterEncoding=utf8&useSSL=false
+        url: jdbc:mysql://10.21.1.150:3306/cpiworkflow?useUnicode=true&characterEncoding=utf8&useSSL=false
         username: root
-        password:
+        password: admin123456
         hikari:
             data-source-properties:
                 cachePrepStmts: true
