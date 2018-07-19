@@ -8,7 +8,7 @@
  * <author>          <time>          <version>          <desc>
  * 作者姓名           修改时间           版本号              描述
  */
-package com.cpi.workflow.service.activiti;
+package com.cpi.workflow.service.activiti.manage;
 
 import com.cpi.workflow.service.dto.ActivitiWorkflowFileDTO;
 import org.activiti.engine.ProcessEngine;
@@ -16,7 +16,6 @@ import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;

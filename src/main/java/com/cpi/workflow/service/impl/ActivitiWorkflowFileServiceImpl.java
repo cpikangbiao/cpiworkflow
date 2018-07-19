@@ -84,8 +84,4 @@ public class ActivitiWorkflowFileServiceImpl implements ActivitiWorkflowFileServ
         activitiWorkflowFileRepository.delete(id);
     }
 
-    @Override
-    public void deployProcessDefinition(ActivitiWorkflowFileDTO activitiWorkflowFileDTO) {
-
-    }
 }

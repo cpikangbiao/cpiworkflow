@@ -2,14 +2,13 @@ package com.cpi.workflow.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.cpi.workflow.service.ActivitiWorkflowFileService;
-import com.cpi.workflow.service.activiti.ActivitiDeploymentService;
+import com.cpi.workflow.service.activiti.manage.ActivitiDeploymentService;
 import com.cpi.workflow.web.rest.errors.BadRequestAlertException;
 import com.cpi.workflow.web.rest.util.HeaderUtil;
 import com.cpi.workflow.web.rest.util.PaginationUtil;
 import com.cpi.workflow.service.dto.ActivitiWorkflowFileDTO;
 import com.cpi.workflow.service.dto.ActivitiWorkflowFileCriteria;
 import com.cpi.workflow.service.ActivitiWorkflowFileQueryService;
-import com.netflix.discovery.converters.Auto;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

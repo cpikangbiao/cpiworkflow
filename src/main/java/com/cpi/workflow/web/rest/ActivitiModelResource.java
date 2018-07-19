@@ -11,20 +11,14 @@
 package com.cpi.workflow.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import com.cpi.workflow.service.activiti.ActivitiDeploymentService;
-import com.cpi.workflow.service.activiti.ActivitiModelService;
-import com.cpi.workflow.service.dto.ActivitiWorkflowFileDTO;
-import com.cpi.workflow.web.rest.errors.BadRequestAlertException;
+import com.cpi.workflow.service.activiti.manage.ActivitiModelService;
 import com.cpi.workflow.web.rest.util.HeaderUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
-import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
-import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
@@ -34,12 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 
 /**
  * 〈一句话功能简述〉<br>
