@@ -48,11 +48,16 @@ public class MicroserviceSecurityConfiguration extends ResourceServerConfigurerA
 
 
             // for activiti workflow
-            .antMatchers("/repository/**").authenticated()
-            .antMatchers("/runtime/**").authenticated()
-            .antMatchers("/engine/**").authenticated()
-            .antMatchers("/history/**").authenticated()
-            .antMatchers("/identity/**").authenticated()
+//            .antMatchers("/repository/**").authenticated()
+//            .antMatchers("/runtime/**").authenticated()
+//            .antMatchers("/engine/**").authenticated()
+//            .antMatchers("/history/**").authenticated()
+//            .antMatchers("/identity/**").authenticated()
+            .antMatchers("/repository/**").permitAll()
+            .antMatchers("/runtime/**").permitAll()
+            .antMatchers("/engine/**").permitAll()
+            .antMatchers("/history/**").permitAll()
+            .antMatchers("/identity/**").permitAll()
 //            .antMatchers("/managerment/**").authenticated()
 
             .antMatchers("/service/**").permitAll()

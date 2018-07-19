@@ -2,15 +2,18 @@ package com.cpi.workflow.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.cpi.workflow.service.ActivitiWorkflowFileService;
+import com.cpi.workflow.service.activiti.ActivitiDeploymentService;
 import com.cpi.workflow.web.rest.errors.BadRequestAlertException;
 import com.cpi.workflow.web.rest.util.HeaderUtil;
 import com.cpi.workflow.web.rest.util.PaginationUtil;
 import com.cpi.workflow.service.dto.ActivitiWorkflowFileDTO;
 import com.cpi.workflow.service.dto.ActivitiWorkflowFileCriteria;
 import com.cpi.workflow.service.ActivitiWorkflowFileQueryService;
+import com.netflix.discovery.converters.Auto;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +37,9 @@ public class ActivitiWorkflowFileResource {
     private final Logger log = LoggerFactory.getLogger(ActivitiWorkflowFileResource.class);
 
     private static final String ENTITY_NAME = "activitiWorkflowFile";
+
+    @Autowired
+    private ActivitiDeploymentService activitiDeploymentService;
 
     private final ActivitiWorkflowFileService activitiWorkflowFileService;
 
@@ -128,5 +134,23 @@ public class ActivitiWorkflowFileResource {
         log.debug("REST request to delete ActivitiWorkflowFile : {}", id);
         activitiWorkflowFileService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+    }
+
+    /**
+     * Deploy  /act-workflow-files/:id : delete the "id" actWorkflowFile.
+     *
+     * @param id the id of the actWorkflowFileDTO to delete
+     * @return the ResponseEntity with status 200 (OK)
+     */
+    @PutMapping("/activiti-workflow-files/{id}/deploy")
+    @Timed
+    public ResponseEntity<Void> depolyActivitiWorkflowFile(@PathVariable Long id) {
+        log.debug("REST request to delete ActWorkflowFile : {}", id);
+
+        if (activitiWorkflowFileService.findOne(id) != null) {
+            activitiDeploymentService.deployProcessDefinition(activitiWorkflowFileService.findOne(id));
+        }
+
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeployAlert(ENTITY_NAME, id.toString())).build();
     }
 }

@@ -83,4 +83,9 @@ public class ActivitiWorkflowFileServiceImpl implements ActivitiWorkflowFileServ
         log.debug("Request to delete ActivitiWorkflowFile : {}", id);
         activitiWorkflowFileRepository.delete(id);
     }
+
+    @Override
+    public void deployProcessDefinition(ActivitiWorkflowFileDTO activitiWorkflowFileDTO) {
+
+    }
 }

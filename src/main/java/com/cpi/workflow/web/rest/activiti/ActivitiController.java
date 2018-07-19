@@ -49,21 +49,22 @@ public class ActivitiController {
             ObjectNode stencilSetNode = objectMapper.createObjectNode();
             stencilSetNode.put("namespace", "http://b3mn.org/stencilset/bpmn2.0#");
             editorNode.put("stencilset", stencilSetNode);
-            Model modelData = repositoryService.newModel();
+
+            Model model = repositoryService.newModel();
 
             ObjectNode modelObjectNode = objectMapper.createObjectNode();
             modelObjectNode.put(ModelDataJsonConstants.MODEL_NAME, "hello1111");
             modelObjectNode.put(ModelDataJsonConstants.MODEL_REVISION, 1);
             String description = "hello1111";
             modelObjectNode.put(ModelDataJsonConstants.MODEL_DESCRIPTION, description);
-            modelData.setMetaInfo(modelObjectNode.toString());
-            modelData.setName("hello1111");
-            modelData.setKey("12313123");
+            model.setMetaInfo(modelObjectNode.toString());
+            model.setName("hello1111");
+            model.setKey("12313123");
 
             //保存模型
-            repositoryService.saveModel(modelData);
-            repositoryService.addModelEditorSource(modelData.getId(), editorNode.toString().getBytes("utf-8"));
-            response.sendRedirect(request.getContextPath() + "/modeler.html?modelId=" + modelData.getId());
+            repositoryService.saveModel(model);
+            repositoryService.addModelEditorSource(model.getId(), editorNode.toString().getBytes("utf-8"));
+            response.sendRedirect(request.getContextPath() + "/modeler.html?modelId=" + model.getId());
         } catch (Exception e) {
             System.out.println("创建模型失败：");
         }
