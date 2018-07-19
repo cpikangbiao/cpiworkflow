@@ -62,6 +62,18 @@ public class ActivitiModelService {
         return model;
     }
 
+    public ObjectNode createEditorNode() {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode editorNode = objectMapper.createObjectNode();
+        editorNode.put("id", "canvas");
+        editorNode.put("resourceId", "canvas");
+        ObjectNode stencilSetNode = objectMapper.createObjectNode();
+        stencilSetNode.put("namespace", "http://b3mn.org/stencilset/bpmn2.0#");
+        editorNode.put("stencilset", stencilSetNode);
+
+        return editorNode;
+    }
 
 
 //    /**

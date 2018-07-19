@@ -137,7 +137,7 @@ public class ActivitiWorkflowFileResource {
     }
 
     /**
-     * Deploy  /act-workflow-files/:id : delete the "id" actWorkflowFile.
+     * Deploy  /act-workflow-files/:id : deploy the "id" actWorkflowFile.
      *
      * @param id the id of the actWorkflowFileDTO to delete
      * @return the ResponseEntity with status 200 (OK)
