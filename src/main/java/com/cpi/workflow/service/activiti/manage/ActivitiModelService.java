@@ -62,6 +62,10 @@ public class ActivitiModelService {
         return model;
     }
 
+    public void deleteModel(String modelId) {
+        repositoryService.deleteModel(modelId);
+    }
+
     public ObjectNode createEditorNode() {
 
         ObjectMapper objectMapper = new ObjectMapper();

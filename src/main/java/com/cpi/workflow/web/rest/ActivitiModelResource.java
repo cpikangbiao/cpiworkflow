@@ -28,6 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -59,7 +62,8 @@ public class ActivitiModelResource {
     @Timed
     public ResponseEntity<Model> createNewModel(@RequestParam(value = "name") String name,
                                                 @RequestParam(value = "description") String description,
-                                                @RequestParam(value = "key") String key) throws URISyntaxException {
+                                                @RequestParam(value = "key") String key,
+                                                HttpServletRequest request) throws URISyntaxException {
         log.debug("REST request to create new model :name : {} description : {} key : {}", name, description, key);
 
         Model model = activitiModelService.createNewModel(name, description, key);
@@ -71,44 +75,50 @@ public class ActivitiModelResource {
             e.printStackTrace();
         }
 
-        return ResponseEntity.created(new URI("/modeler.html?modelId=" + model.getId()))
+        return ResponseEntity.created(new URI(request.getContextPath() + "/modeler.html?modelId=" + model.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, model.getId().toString()))
             .body(model);
     }
 
-//    @RequestMapping("/create")
-//    public void create(HttpServletRequest request, HttpServletResponse response) {
+    @GetMapping("/edit/{modelId}")
+    @Timed
+    public void editModel(@PathVariable String modelId,
+                          HttpServletRequest request,
+                          HttpServletResponse response) { //throws URISyntaxException {
+        log.debug("REST request to edit model :modelId : {} ", modelId);
+
+        ObjectNode editorNode = activitiModelService.createEditorNode();
+
+        Model model = repositoryService.getModel(modelId);
+        try {
+            response.sendRedirect(request.getContextPath() + "/modeler.html?modelId=" + model.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 //        try {
-//            String description = "descriptiontest";
-//            String name = "nametest";
-//            String key  = "keytest";
-//
-//            Model model = activitiModelService.createNewModel(name, description, key);
-//            ObjectNode editorNode = activitiModelService.createEditorNode();
-//
-//            ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
-//            RepositoryService repositoryService = processEngine.getRepositoryService();
-//
-//            repositoryService.addModelEditorSource(model.getId(), editorNode.toString().getBytes("utf-8"));
-//            response.sendRedirect(request.getContextPath() + "/modeler.html?modelId=" + model.getId());
-//
-//        } catch (Exception e) {
-//            System.out.println("创建模型失败：");
+//            repositoryService.addModelEditorSource(modelId, editorNode.toString().getBytes("utf-8"));
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
 //        }
-//    }
+//
+//        return ResponseEntity.created(new URI(request.getContextPath() + "/modeler.html?modelId=" + modelId))
+//            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, modelId))
+//            .body(model);
+    }
 
+    @DeleteMapping("/delete/{modelId}")
+    @Timed
+    public ResponseEntity<Void> deleteModel(@PathVariable String modelId) {
+        log.debug("REST request to delete Model : {}", modelId);
+        repositoryService.deleteModel(modelId);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, modelId.toString())).build();
+    }
 
-    /**
-     * 发布模型为流程定义
-     * @param id
-     * @return
-     * @throws Exception
-     */
-    @PostMapping("{id}/deployment")
-    public ResponseEntity deploy(@PathVariable("id")String id) throws Exception {
+    @PostMapping("/deployment/{modelId}")
+    public ResponseEntity deploy(@PathVariable("modelId")String modelId) throws Exception {
 
         //获取模型
-        Model modelData = repositoryService.getModel(id);
+        Model modelData = repositoryService.getModel(modelId);
         byte[] bytes = repositoryService.getModelEditorSource(modelData.getId());
 
         if (bytes.length > 0) {
@@ -127,7 +137,7 @@ public class ActivitiModelResource {
             modelData.setDeploymentId(deployment.getId());
             repositoryService.saveModel(modelData);
         }
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeployAlert(ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeployAlert(ENTITY_NAME, modelId.toString())).build();
     }
 
 

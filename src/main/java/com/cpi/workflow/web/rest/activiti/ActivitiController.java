@@ -17,6 +17,7 @@ import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/activiti")
 public class ActivitiController {
+
     @RequestMapping("/create")
     public void create(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -64,6 +66,30 @@ public class ActivitiController {
             //保存模型
             repositoryService.saveModel(model);
             repositoryService.addModelEditorSource(model.getId(), editorNode.toString().getBytes("utf-8"));
+            response.sendRedirect(request.getContextPath() + "/modeler.html?modelId=" + model.getId());
+        } catch (Exception e) {
+            System.out.println("创建模型失败：");
+        }
+    }
+
+    @RequestMapping("/edit/{modelid}")
+    public void edit(@PathVariable String modelid, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+
+            RepositoryService repositoryService = processEngine.getRepositoryService();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode editorNode = objectMapper.createObjectNode();
+            editorNode.put("id", "canvas");
+            editorNode.put("resourceId", "canvas");
+            ObjectNode stencilSetNode = objectMapper.createObjectNode();
+            stencilSetNode.put("namespace", "http://b3mn.org/stencilset/bpmn2.0#");
+            editorNode.put("stencilset", stencilSetNode);
+
+            Model model = repositoryService.getModel(modelid);
+            repositoryService.addModelEditorSource(model.getId(), editorNode.toString().getBytes("utf-8"));
+
             response.sendRedirect(request.getContextPath() + "/modeler.html?modelId=" + model.getId());
         } catch (Exception e) {
             System.out.println("创建模型失败：");
