@@ -35,9 +35,9 @@ import java.util.Map;
  * @since 1.0.0
  */
 
-public abstract class ActivitiUtility {
+public abstract class ActivitiService {
 
-    private final Logger log = LoggerFactory.getLogger(ActivitiUtility.class);
+
 //
 //    /**
 //     * 找到指定用户和指定流程实例ID的所有任务

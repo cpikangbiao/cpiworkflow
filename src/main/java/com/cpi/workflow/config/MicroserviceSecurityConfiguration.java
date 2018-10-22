@@ -44,6 +44,7 @@ public class MicroserviceSecurityConfiguration extends ResourceServerConfigurerA
         .and()
             .authorizeRequests()
             .antMatchers("/api/profile-info").permitAll()
+            .antMatchers("/api/test/**").permitAll()
             .antMatchers("/api/**").authenticated()
 
 
@@ -62,6 +63,7 @@ public class MicroserviceSecurityConfiguration extends ResourceServerConfigurerA
 
             .antMatchers("/service/**").permitAll()
             .antMatchers("/activiti/**").permitAll()
+
             // for activiti workflow --end
 
             .antMatchers("/management/health").permitAll()
