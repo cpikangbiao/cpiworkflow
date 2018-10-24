@@ -11,6 +11,7 @@
 package com.cpi.workflow.service.activiti.utility;
 
 import com.cpi.workflow.service.activiti.common.FormPropertyBean;
+import com.cpi.workflow.service.activiti.common.ProcessInstanceStatusBean;
 import com.cpi.workflow.service.activiti.manage.ActivitiDeploymentService;
 import com.hazelcast.spi.ExecutionService;
 import org.activiti.bpmn.model.BpmnModel;
@@ -20,6 +21,8 @@ import org.activiti.engine.form.FormProperty;
 import org.activiti.engine.form.StartFormData;
 import org.activiti.engine.form.TaskFormData;
 import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
@@ -41,6 +44,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -90,12 +94,22 @@ public abstract class ActivitiService {
         runtimeService.deleteProcessInstance(processInstanceId, null);
     }
 
-    public void suspendProcessInstanceById(String processInstanceId) {
+    private void suspendProcessInstanceById(String processInstanceId) {
         runtimeService.suspendProcessInstanceById(processInstanceId);
     }
 
-    public void activateProcessInstanceById(String processInstanceId) {
+    private void activateProcessInstanceById(String processInstanceId) {
         runtimeService.activateProcessInstanceById(processInstanceId);
+    }
+
+    public void activateOrSuspendProcessInstanceById(String processInstanceId) {
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+
+        if (processInstance.isSuspended()) {
+            activateProcessInstanceById(processInstanceId);
+        } else {
+            suspendProcessInstanceById(processInstanceId);
+        }
     }
 
     protected Object getTaskVariables(String taskId, String variableKey) {
@@ -152,7 +166,13 @@ public abstract class ActivitiService {
         List<FormPropertyBean> formPropertyBeans = new ArrayList<>();
 
         for (FormProperty formProperty : taskFormData.getFormProperties()) {
-            FormPropertyBean formPropertyBean = new FormPropertyBean(formProperty);
+            FormPropertyBean formPropertyBean =
+                new FormPropertyBean(
+                    formProperty.getId(),
+                    formProperty.getName(),
+                    formProperty.getType().getName(),
+                    formProperty.getType().getInformation("values")
+                );
             formPropertyBeans.add(formPropertyBean);
         }
         return formPropertyBeans;
@@ -168,8 +188,60 @@ public abstract class ActivitiService {
 
 
 
+    public ProcessInstanceStatusBean getProcessStatusForProcessInstanceId(String prcessInstanceId) {
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(prcessInstanceId).singleResult();
+        Task task = taskService.createTaskQuery().processInstanceId(prcessInstanceId).singleResult();
+        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(prcessInstanceId).singleResult();
+        List<HistoricVariableInstance> historicVariableInstances = historyService.createHistoricVariableInstanceQuery().processInstanceId(prcessInstanceId).list();
+
+        String currentNode = "";
+        String currentUserId = "";
+        Instant processBeginTime = Instant.now();
+        Instant processEndTime = Instant.now();
+        Boolean isSuspended = false;
+        String createUserId = "";
+
+        if (historicVariableInstances != null && historicVariableInstances.size() >0) {
+            for (HistoricVariableInstance historicVariableInstance :  historicVariableInstances) {
+                if (historicVariableInstance.getVariableName().equals(VARIABLE_FOR_CREATE_USERID)) {
+                    createUserId = (String) historicVariableInstance.getValue();
+                }
+            }
+        }
+
+        if (processInstance != null) {
+            isSuspended = processInstance.isSuspended();
+        }
+
+        if (historicProcessInstance != null) {
+            processBeginTime = historicProcessInstance.getStartTime().toInstant();
+            processEndTime   = historicProcessInstance.getEndTime().toInstant();
+        }
 
 
+        if (task != null) {
+            currentNode = task.getName();
+            currentUserId = task.getAssignee();
+        } else {
+            currentNode = "End";
+            currentUserId = "";
+        }
+
+        return new ProcessInstanceStatusBean(
+            prcessInstanceId,
+            currentNode,
+            currentUserId,
+            processBeginTime,
+            processEndTime,
+            isSuspended,
+            createUserId
+       );
+    }
+
+//    public List<> getProcessInstanceLog(String prcessInstanceId) {
+//        List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery().processInstanceId(prcessInstanceId).list();
+//
+//    }
 
 
 
@@ -179,7 +251,8 @@ public abstract class ActivitiService {
         return (ProcessDefinitionEntity) repositoryService.getDeployedProcessDefinition(task.getProcessDefinitionId());
     }
 
-
+//        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(prcessInstanceId).singleResult();
+//        Task task = taskService.createTaskQuery().processInstanceId(prcessInstanceId).singleResult();
 
 //        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(prcessInstanceId).singleResult();
 //

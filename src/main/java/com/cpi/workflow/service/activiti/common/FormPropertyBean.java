@@ -15,6 +15,8 @@ import org.activiti.engine.form.FormType;
 import org.activiti.engine.impl.form.BooleanFormType;
 import org.activiti.engine.impl.form.EnumFormType;
 
+import java.io.Serializable;
+
 /**
  * 〈一句话功能简述〉<br>
  * 〈〉
@@ -23,7 +25,7 @@ import org.activiti.engine.impl.form.EnumFormType;
  * @create 2018/10/23
  * @since 1.0.0
  */
-public class FormPropertyBean {
+public class FormPropertyBean implements Serializable {
 
     private String id;
 
@@ -33,21 +35,11 @@ public class FormPropertyBean {
 
     private Object value;
 
-    public FormPropertyBean(FormProperty formProperty) {
-        this.id = formProperty.getId();
-        this.name = formProperty.getName();
-
-        if ( formProperty.getType() instanceof EnumFormType) {
-            this.type  = formProperty.getType().getName();
-            this.value = formProperty.getType().getInformation("values");
-        } else if ( formProperty.getType() instanceof BooleanFormType) {
-            this.type  = formProperty.getType().getName();
-            this.value = formProperty.getType().getInformation("values");
-        } else {
-            this.type  = formProperty.getType().getName();
-            this.value = formProperty.getType().getInformation("values");
-        }
-
+    public FormPropertyBean(String id, String name, String type, Object value) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.value = value;
     }
 
     public String getId() {

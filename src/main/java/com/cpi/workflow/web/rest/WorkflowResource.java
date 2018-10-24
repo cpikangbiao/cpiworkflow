@@ -11,6 +11,7 @@
 package com.cpi.workflow.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
+import com.cpi.workflow.service.activiti.common.ProcessInstanceStatusBean;
 import com.cpi.workflow.service.activiti.utility.AcitivitiServiceImpl;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.slf4j.Logger;
@@ -74,9 +75,10 @@ public class WorkflowResource {
         return new ResponseEntity<>(acitivitiService.getTaskFormPropertyByProcessInstanceId(processInstanceId), HttpStatus.OK);
     }
 
+
     @GetMapping("/complete")
     @Timed
-    public ResponseEntity<List> completeTaskForProcessInstanceId(String processInstanceId, Map<String, Object> variables ) {
+    public ResponseEntity completeTaskForProcessInstanceId(String processInstanceId, Map<String, Object> variables ) {
         log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
 
 //        variables = new HashMap<>();
@@ -105,4 +107,30 @@ public class WorkflowResource {
 
         return new ResponseEntity<>(bytes, HttpStatus.OK);
     }
+
+
+    @GetMapping("/get-process-status")
+    @Timed
+    public ResponseEntity<ProcessInstanceStatusBean> getProcessStatusForProcessInstanceId(String processInstanceId) {
+        log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
+        return new ResponseEntity<>(acitivitiService.getProcessStatusForProcessInstanceId(processInstanceId), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/activate-or-suspend")
+    @Timed
+    public ResponseEntity activateOrSuspendProcessInstanceById(String processInstanceId) {
+        log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
+        acitivitiService.activateOrSuspendProcessInstanceById(processInstanceId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/delete")
+    @Timed
+    public ResponseEntity deleteProcessInstanceById(String processInstanceId) {
+        log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
+        acitivitiService.deleteProcessInstanceById(processInstanceId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
 }

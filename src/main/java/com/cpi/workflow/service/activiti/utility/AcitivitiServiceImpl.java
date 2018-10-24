@@ -37,8 +37,6 @@ public class AcitivitiServiceImpl extends ActivitiService {
 
     private final Logger log = LoggerFactory.getLogger(AcitivitiServiceImpl.class);
 
-    private static String ACTIVITI_WORKFLOW_FOR_UNDERWRITING = "UWCertificateApproval";
-
     private static String VARIABLE_FOR_ENTITY_ID = "entityId";
 
     public ProcessInstance startProcessInstance(String processDefinitionKey, String entityId, String userId){
