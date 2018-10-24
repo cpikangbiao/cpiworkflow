@@ -85,10 +85,11 @@ spring:
     thymeleaf:
         mode: XHTML
     activiti:
-        check-process-definitions: false #校验流程文件，默认校验resources下的processes文件夹里的流程文件 自动部署验证设置:true-开启（默认）、false-关闭
-        sync-executor-enabled: false # asyncExecutorEnabled属性设置设置true后将代替那些老的Job executor
+        check-process-definitions: false # 校验流程文件，默认校验resources下的processes文件夹里的流程文件 自动部署验证设置:true-开启（默认）、false-关闭
+        sync-executor-enabled: false     # asyncExecutorEnabled属性设置设置true后将代替那些老的Job executor
         job-executor-activate: false
-        async-executor-activate: false # asyncExecutorActivate是指activiti在流程引擎启动就激活AsyncExecutor,异步：true-开启（默认）、false-关闭
+        async-executor-activate: false   # asyncExecutorActivate是指activiti在流程引擎启动就激活AsyncExecutor,异步：true-开启（默认）、false-关闭
+        database-schema-update : false   # 每次应用启动不检查Activiti数据表是否存在及版本号是否匹配，提升应用启动速度
 
 security:
     basic:

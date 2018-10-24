@@ -8,8 +8,9 @@
  * <author>          <time>          <version>          <desc>
  * 作者姓名           修改时间           版本号              描述
  */
-package com.cpi.workflow.service.activiti.utility;
+package com.cpi.workflow.service.activiti.utility.correspondent;
 
+import com.cpi.workflow.service.activiti.utility.ActivitiService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.runtime.ProcessInstance;

@@ -11,7 +11,7 @@
 package com.cpi.workflow.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import com.cpi.workflow.service.activiti.utility.CorrespondentAcitivitiService;
+import com.cpi.workflow.service.activiti.utility.correspondent.CorrespondentAcitivitiService;
 import com.cpi.workflow.service.dto.ActivitiWorkflowFileDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

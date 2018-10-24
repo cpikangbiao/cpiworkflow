@@ -19,6 +19,8 @@ public class ActivitiWorkflowFile implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final Long WORKFLOW_FILE_CORRESPONDENT = new Long(1);
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
