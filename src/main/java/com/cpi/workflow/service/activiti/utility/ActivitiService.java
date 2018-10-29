@@ -214,8 +214,13 @@ public abstract class ActivitiService {
         }
 
         if (historicProcessInstance != null) {
-            processBeginTime = historicProcessInstance.getStartTime().toInstant();
-            processEndTime   = historicProcessInstance.getEndTime().toInstant();
+            if (historicProcessInstance.getStartTime() != null) {
+                processBeginTime = historicProcessInstance.getStartTime().toInstant();
+            }
+
+            if (historicProcessInstance.getEndTime() != null) {
+                processEndTime   = historicProcessInstance.getEndTime().toInstant();
+            }
         }
 
 

@@ -35,6 +35,9 @@ public class FormPropertyBean implements Serializable {
 
     private Object value;
 
+    public FormPropertyBean() {
+    }
+
     public FormPropertyBean(String id, String name, String type, Object value) {
         this.id = id;
         this.name = name;
