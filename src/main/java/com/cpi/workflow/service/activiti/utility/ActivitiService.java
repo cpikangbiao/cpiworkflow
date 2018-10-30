@@ -91,7 +91,10 @@ public abstract class ActivitiService {
     }
 
     public void deleteProcessInstanceById(String processInstanceId) {
-        runtimeService.deleteProcessInstance(processInstanceId, null);
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+        if (processInstance != null) {
+            runtimeService.deleteProcessInstance(processInstanceId, null);
+        }
     }
 
     private void suspendProcessInstanceById(String processInstanceId) {
@@ -185,9 +188,6 @@ public abstract class ActivitiService {
         }
     }
 
-
-
-
     public ProcessInstanceStatusBean getProcessStatusForProcessInstanceId(String prcessInstanceId) {
         ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(prcessInstanceId).singleResult();
         Task task = taskService.createTaskQuery().processInstanceId(prcessInstanceId).singleResult();
@@ -196,12 +196,13 @@ public abstract class ActivitiService {
 
         String currentNode = "";
         String currentUserId = "";
-        Instant processBeginTime = Instant.now();
-        Instant processEndTime = Instant.now();
+        Instant processBeginTime = null;
+        Instant processEndTime = null;
         Boolean isSuspended = false;
+        Boolean isFinished  = false;
         String createUserId = "";
 
-        if (historicVariableInstances != null && historicVariableInstances.size() >0) {
+        if (historicVariableInstances != null && historicVariableInstances.size() > 0) {
             for (HistoricVariableInstance historicVariableInstance :  historicVariableInstances) {
                 if (historicVariableInstance.getVariableName().equals(VARIABLE_FOR_CREATE_USERID)) {
                     createUserId = (String) historicVariableInstance.getValue();
@@ -211,6 +212,8 @@ public abstract class ActivitiService {
 
         if (processInstance != null) {
             isSuspended = processInstance.isSuspended();
+        } else {
+            isFinished = true;
         }
 
         if (historicProcessInstance != null) {
@@ -239,7 +242,8 @@ public abstract class ActivitiService {
             processBeginTime,
             processEndTime,
             isSuspended,
-            createUserId
+            createUserId,
+            isFinished
        );
     }
 

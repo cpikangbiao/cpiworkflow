@@ -35,24 +35,28 @@ public class ProcessInstanceStatusBean implements Serializable {
 
     private Boolean isSuspended;
 
+    private Boolean isFinished;
+
     private String createUserId;
 
     public ProcessInstanceStatusBean() {
-        this.processInstanceId = processInstanceId;
-        this.currentNode = currentNode;
-        this.currentUserId = currentUserId;
-        this.processBeginTime = processBeginTime;
-        this.processEndTime = processEndTime;
-        this.isSuspended = isSuspended;
-        this.createUserId = createUserId;
+        this.processInstanceId = null;
+        this.currentNode = null;
+        this.currentUserId = null;
+        this.processBeginTime = null;
+        this.processEndTime = null;
+        this.isSuspended = false;
+        this.isFinished = false;
+        this.createUserId = null;
     }
-    public ProcessInstanceStatusBean(String processInstanceId, String currentNode, String currentUserId, Instant processBeginTime, Instant processEndTime, Boolean isSuspended, String createUserId) {
+    public ProcessInstanceStatusBean(String processInstanceId, String currentNode, String currentUserId, Instant processBeginTime, Instant processEndTime, Boolean isSuspended, String createUserId, Boolean isFinished) {
         this.processInstanceId = processInstanceId;
         this.currentNode = currentNode;
         this.currentUserId = currentUserId;
         this.processBeginTime = processBeginTime;
         this.processEndTime = processEndTime;
         this.isSuspended = isSuspended;
+        this.isFinished = isFinished;
         this.createUserId = createUserId;
     }
 
@@ -110,5 +114,13 @@ public class ProcessInstanceStatusBean implements Serializable {
 
     public void setCreateUserId(String createUserId) {
         this.createUserId = createUserId;
+    }
+
+    public Boolean getFinished() {
+        return isFinished;
+    }
+
+    public void setFinished(Boolean finished) {
+        isFinished = finished;
     }
 }

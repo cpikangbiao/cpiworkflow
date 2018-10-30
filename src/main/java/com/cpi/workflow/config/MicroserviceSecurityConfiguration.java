@@ -45,6 +45,7 @@ public class MicroserviceSecurityConfiguration extends ResourceServerConfigurerA
             .authorizeRequests()
             .antMatchers("/api/profile-info").permitAll()
             .antMatchers("/api/test/**").permitAll()
+            .antMatchers("/api/workflow/**").permitAll()
             .antMatchers("/api/**").authenticated()
 
 

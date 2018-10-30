@@ -62,13 +62,21 @@ public class WorkflowResource {
         return new ResponseEntity<>(acitivitiService.countApprovalInsuredVesselIdsForUserId(processDefinitionKey, userId), HttpStatus.OK);
     }
 
+//    @GetMapping("/get-task-list")
+//    @Timed
+//    public ResponseEntity<List> getTaskListForUserId(@RequestParam(value = "processDefinitionKey", required = true) String processDefinitionKey,
+//                                                     @RequestParam(value = "userId", required = true) String userId,
+//                                                     @RequestParam(value = "page", required = true) Pageable page) {
+//        log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
+//        return new ResponseEntity<>(acitivitiService.getApprovalEntitylIdsForUserId(processDefinitionKey, userId, page), HttpStatus.OK);
+//    }
+
     @GetMapping("/get-task-list")
     @Timed
     public ResponseEntity<List> getTaskListForUserId(@RequestParam(value = "processDefinitionKey", required = true) String processDefinitionKey,
-                                                     @RequestParam(value = "userId", required = true) String userId,
-                                                     @RequestParam(value = "page", required = true) Pageable page) {
+                                                     @RequestParam(value = "userId", required = true) String userId) {
         log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
-        return new ResponseEntity<>(acitivitiService.getApprovalEntitylIdsForUserId(processDefinitionKey, userId, page), HttpStatus.OK);
+        return new ResponseEntity<>(acitivitiService.getApprovalEntitylIdsForUserId(processDefinitionKey, userId, null), HttpStatus.OK);
     }
 
     @GetMapping("/get-task-form-property")
