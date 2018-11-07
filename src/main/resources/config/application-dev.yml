@@ -44,8 +44,11 @@ spring:
                     brokers: 10.21.1.132:9092
                     zk-nodes: 10.21.1.132:2181
             bindings:
-                output:
-                    destination: topic-jhipster
+                messageChannel:
+                    destination: topic-cpiworkflow
+#                    content-type: application/json;charset=utf-8
+                subscribableChannel:
+                    destination: topic-cpiworkflow
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         url: jdbc:mysql://10.21.1.130:3306/cpiworkflow?useUnicode=true&characterEncoding=utf8&useSSL=false
@@ -107,7 +110,7 @@ liquibase:
 #        key-alias: cpiworkflow
 # ===================================================================
 server:
-    port: 8086
+    port: 8096
 
 # ===================================================================
 # JHipster specific properties

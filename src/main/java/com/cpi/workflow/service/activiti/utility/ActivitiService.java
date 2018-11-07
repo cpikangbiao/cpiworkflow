@@ -61,6 +61,8 @@ public abstract class ActivitiService {
 
     public static String VARIABLE_FOR_CREATE_USERID = "CreateUserId";
 
+    public static String VARIABLE_FOR_ENTITY_ID = "entityId";
+
     @Autowired
     private RuntimeService runtimeService;
 
@@ -184,7 +186,9 @@ public abstract class ActivitiService {
     public void completeTaskByProcessInstanceId(String prcessInstanceId, Map<String, Object> variables) {
         Task task = taskService.createTaskQuery().processInstanceId(prcessInstanceId).singleResult();
         if (task != null && task.getId() != null) {
-            taskService.complete(task.getId(), variables);
+            if (!task.isSuspended()) {
+                taskService.complete(task.getId(), variables);
+            }
         }
     }
 
@@ -426,4 +430,22 @@ public abstract class ActivitiService {
 //            .processDefinitionId("testVariables:2:1704")//流程定义ID
 //            .list();
 //    }
+
+
+    public Map<String, Object> currentTaskService(String currentTaskId) {
+        Map<String, Object> taskMap = new HashMap<>();
+        Task currentTask = taskService.createTaskQuery().taskId(currentTaskId).singleResult();
+        HistoricTaskInstance previousTask = findPreviousTask(currentTask.getProcessInstanceId());
+
+        taskMap.put("Current task name: ", currentTask.getName());
+        taskMap.put("Previous task name: ", previousTask.getName());
+
+        return taskMap;
+    }
+
+    // Order tasks by end date and get the latest
+    public HistoricTaskInstance findPreviousTask(String processInstanceId) {
+        return historyService.createHistoricTaskInstanceQuery().
+            processInstanceId(processInstanceId).orderByHistoricTaskInstanceEndTime().desc().list().get(0);
+    }
 }

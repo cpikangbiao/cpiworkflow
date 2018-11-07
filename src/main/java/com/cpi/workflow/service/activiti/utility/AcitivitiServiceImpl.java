@@ -37,7 +37,6 @@ public class AcitivitiServiceImpl extends ActivitiService {
 
     private final Logger log = LoggerFactory.getLogger(AcitivitiServiceImpl.class);
 
-    private static String VARIABLE_FOR_ENTITY_ID = "entityId";
 
     public ProcessInstance startProcessInstance(String processDefinitionKey, String entityId, String userId){
         Map<String, Object> variables = new HashMap<>();
@@ -54,19 +53,16 @@ public class AcitivitiServiceImpl extends ActivitiService {
         List<String> taskRepresentations = new ArrayList<>();
 
         for (Task task : tasks) {
-            taskRepresentations.add((String) getTaskVariables(task.getId(), VARIABLE_FOR_ENTITY_ID));
+            if (!task.isSuspended()) {
+                taskRepresentations.add((String) getTaskVariables(task.getId(), VARIABLE_FOR_ENTITY_ID));
+            }
         }
 
         return taskRepresentations;
     }
 
     public Long countApprovalInsuredVesselIdsForUserId(String processDefinitionKey, String userId) {
-        List<Task> tasks = getTaskList(processDefinitionKey, userId);
-        List<TaskRepresentation> taskRepresentations = new ArrayList<>();
-
-        for (Task task : tasks) {
-            taskRepresentations.add(new TaskRepresentation(task.getId(), task.getName()));
-        }
+        List<String> taskRepresentations = getApprovalEntitylIdsForUserId(processDefinitionKey, userId, null);
         return  new Long(taskRepresentations.size());
     }
 

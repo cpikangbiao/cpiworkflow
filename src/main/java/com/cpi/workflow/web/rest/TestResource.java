@@ -13,12 +13,15 @@ package com.cpi.workflow.web.rest;
 import com.codahale.metrics.annotation.Timed;
 import com.cpi.workflow.service.activiti.utility.correspondent.CorrespondentAcitivitiService;
 import com.cpi.workflow.service.dto.ActivitiWorkflowFileDTO;
+import com.cpi.workflow.service.kafka.model.KafkaMessage;
+import com.cpi.workflow.service.kafka.service.ProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,6 +44,9 @@ public class TestResource {
     @Autowired
     private CorrespondentAcitivitiService correspondentAcitivitiUtility;
 
+    @Autowired
+    private ProducerService producerService;
+
     @GetMapping("/create")
     @Timed
     public ResponseEntity<List<ActivitiWorkflowFileDTO>> createProcessInstance() {
@@ -48,5 +54,20 @@ public class TestResource {
         correspondentAcitivitiUtility.startProcessInstance();
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/greetings/{count}")
+    @Timed
+    public void sendMessage(@PathVariable Integer count) {
+        while(count > 0) {
+            KafkaMessage kafkaMessage = new KafkaMessage(
+                KafkaMessage.MESSAGE_TYPE_UW_CERTIFICATE,
+                count.toString(),
+                "生气"
+            );
+            producerService.send(kafkaMessage);
+
+            count--;
+        }
     }
 }

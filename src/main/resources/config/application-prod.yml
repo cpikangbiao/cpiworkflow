@@ -39,8 +39,11 @@ spring:
                     brokers: 10.21.1.141:9092
                     zk-nodes: 10.21.1.141:2181
             bindings:
-                output:
-                    destination: topic-jhipster
+                messageChannel:
+                    destination: topic-cpiworkflow
+                    content-type: application/json
+                subscribableChannel:
+                    destination: topic-cpiworkflow
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         url: jdbc:mysql://10.21.1.150:3306/cpiworkflow?useUnicode=true&characterEncoding=utf8&useSSL=false
