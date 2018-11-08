@@ -63,7 +63,7 @@ public class TestResource {
             KafkaMessage kafkaMessage = new KafkaMessage(
                 KafkaMessage.MESSAGE_TYPE_UW_CERTIFICATE,
                 count.toString(),
-                "生气"
+                "生气111111"
             );
             producerService.send(kafkaMessage);
 

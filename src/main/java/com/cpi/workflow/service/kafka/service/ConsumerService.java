@@ -24,8 +24,8 @@ public class ConsumerService {
 
 
     @StreamListener(ConsumerChannel.CHANNEL)
-    public void consume(KafkaMessage kafkaMessage) {
+    public void consume(String kafkaMessage) {
 
-        log.info("Received message: {}.", kafkaMessage.getMessageType());
+        log.info("Received message: {}.", kafkaMessage);
     }
 }

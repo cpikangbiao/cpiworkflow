@@ -46,7 +46,9 @@ spring:
             bindings:
                 messageChannel:
                     destination: topic-cpiworkflow
-#                    content-type: application/json;charset=utf-8
+                    content-type: application/json
+                    producer:
+                        headerMode: raw
                 subscribableChannel:
                     destination: topic-cpiworkflow
     datasource:

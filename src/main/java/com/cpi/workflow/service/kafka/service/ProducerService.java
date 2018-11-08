@@ -41,7 +41,7 @@ public class ProducerService {
             MessageBuilder
                 .withPayload(kafkaMessage)
 //                .setHeader("content-type","application/json;charset=utf-8")
-                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_OCTET_STREAM)
+//                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_OCTET_STREAM)
                 .build());
     }
 }

@@ -10,13 +10,15 @@
  */
 package com.cpi.workflow.service.activiti.utility.underwriting;
 
-import com.cpi.workflow.service.activiti.utility.AcitivitiServiceImpl;
 import com.cpi.workflow.service.activiti.utility.ActivitiService;
 import com.cpi.workflow.service.kafka.model.KafkaMessage;
 import com.cpi.workflow.service.kafka.service.ProducerService;
-import org.activiti.engine.delegate.DelegateTask;
-import org.activiti.engine.delegate.TaskListener;
+import org.activiti.engine.ProcessEngines;
+import org.activiti.engine.delegate.*;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * 〈一句话功能简述〉<br>
@@ -26,28 +28,36 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @create 2018/10/22
  * @since 1.0.0
  */
-public class UWCertificateCompleteHandler implements TaskListener {
-
-    @Autowired
-    private AcitivitiServiceImpl acitivitiService;
+@Component("uwCertificateCompleteHandler")
+public class UWCertificateCompleteHandler implements JavaDelegate {
 
     @Autowired
     private ProducerService producerService;
 
-    public void notify(DelegateTask delegateTask) {
+    // Order tasks by end date and get the latest
+    private HistoricTaskInstance findPreviousTask(String processInstanceId) {
+        return ProcessEngines.getDefaultProcessEngine().getHistoryService().createHistoricTaskInstanceQuery().
+            processInstanceId(processInstanceId).orderByHistoricTaskInstanceEndTime().desc().list().get(0);
+    }
+
+    @Override
+    public void execute(DelegateExecution delegateExecution) throws Exception {
         // get required variables
-        String entryId = (String) delegateTask.getVariable(ActivitiService.VARIABLE_FOR_ENTITY_ID);
+        String entryId = (String) delegateExecution.getVariable(ActivitiService.VARIABLE_FOR_ENTITY_ID);
+        HistoricTaskInstance historicTaskInstance = findPreviousTask(delegateExecution.getProcessInstanceId());
         // check for the condition
-        if (null != entryId) {
+        if ( entryId != null
+            && producerService != null
+            && historicTaskInstance != null) {
+
             // set values
             KafkaMessage kafkaMessage = new KafkaMessage(
                 KafkaMessage.MESSAGE_TYPE_UW_CERTIFICATE,
                 entryId,
-                acitivitiService.findPreviousTask(delegateTask.getProcessInstanceId()).getAssignee()
+                historicTaskInstance.getAssignee()
             );
 
             producerService.send(kafkaMessage);
         }
     }
-
 }
