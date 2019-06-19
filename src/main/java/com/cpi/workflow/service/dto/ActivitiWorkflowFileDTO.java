@@ -1,13 +1,11 @@
 package com.cpi.workflow.service.dto;
-
-
 import java.time.Instant;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.Lob;
 
 /**
- * A DTO for the ActivitiWorkflowFile entity.
+ * A DTO for the {@link com.cpi.workflow.domain.ActivitiWorkflowFile} entity.
  */
 public class ActivitiWorkflowFileDTO implements Serializable {
 
@@ -17,15 +15,16 @@ public class ActivitiWorkflowFileDTO implements Serializable {
 
     @Lob
     private byte[] processDefinition;
-    private String processDefinitionContentType;
 
+    private String processDefinitionContentType;
     @Lob
     private byte[] processImage;
-    private String processImageContentType;
 
+    private String processImageContentType;
     private Instant uploadTime;
 
     private String uploadUser;
+
 
     public Long getId() {
         return id;
@@ -101,7 +100,7 @@ public class ActivitiWorkflowFileDTO implements Serializable {
         }
 
         ActivitiWorkflowFileDTO activitiWorkflowFileDTO = (ActivitiWorkflowFileDTO) o;
-        if(activitiWorkflowFileDTO.getId() == null || getId() == null) {
+        if (activitiWorkflowFileDTO.getId() == null || getId() == null) {
             return false;
         }
         return Objects.equals(getId(), activitiWorkflowFileDTO.getId());

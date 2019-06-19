@@ -10,7 +10,7 @@
  */
 package com.cpi.workflow.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
+
 import com.cpi.workflow.service.activiti.utility.correspondent.CorrespondentAcitivitiService;
 import com.cpi.workflow.service.dto.ActivitiWorkflowFileDTO;
 import com.cpi.workflow.service.kafka.model.KafkaMessage;
@@ -41,33 +41,31 @@ public class TestResource {
 
     private final Logger log = LoggerFactory.getLogger(TestResource.class);
 
-    @Autowired
-    private CorrespondentAcitivitiService correspondentAcitivitiUtility;
-
-    @Autowired
-    private ProducerService producerService;
-
-    @GetMapping("/create")
-    @Timed
-    public ResponseEntity<List<ActivitiWorkflowFileDTO>> createProcessInstance() {
-        log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
-        correspondentAcitivitiUtility.startProcessInstance();
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/greetings/{count}")
-    @Timed
-    public void sendMessage(@PathVariable Integer count) {
-        while(count > 0) {
-            KafkaMessage kafkaMessage = new KafkaMessage(
-                KafkaMessage.MESSAGE_TYPE_UW_CERTIFICATE,
-                count.toString(),
-                "生气111111"
-            );
-            producerService.send(kafkaMessage);
-
-            count--;
-        }
-    }
+//    @Autowired
+//    private CorrespondentAcitivitiService correspondentAcitivitiUtility;
+//
+//    @Autowired
+//    private ProducerService producerService;
+//
+//    @GetMapping("/create")
+//    public ResponseEntity<List<ActivitiWorkflowFileDTO>> createProcessInstance() {
+//        log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
+//        correspondentAcitivitiUtility.startProcessInstance();
+//
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/greetings/{count}")
+//    public void sendMessage(@PathVariable Integer count) {
+//        while(count > 0) {
+//            KafkaMessage kafkaMessage = new KafkaMessage(
+//                KafkaMessage.MESSAGE_TYPE_UW_CERTIFICATE,
+//                count.toString(),
+//                "生气111111"
+//            );
+//            producerService.send(kafkaMessage);
+//
+//            count--;
+//        }
+//    }
 }

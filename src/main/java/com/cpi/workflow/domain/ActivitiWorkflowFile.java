@@ -1,5 +1,4 @@
 package com.cpi.workflow.domain;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -7,7 +6,6 @@ import javax.persistence.*;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Objects;
 
 /**
  * A ActivitiWorkflowFile.
@@ -154,19 +152,15 @@ public class ActivitiWorkflowFile implements Serializable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof ActivitiWorkflowFile)) {
             return false;
         }
-        ActivitiWorkflowFile activitiWorkflowFile = (ActivitiWorkflowFile) o;
-        if (activitiWorkflowFile.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), activitiWorkflowFile.getId());
+        return id != null && id.equals(((ActivitiWorkflowFile) o).id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return 31;
     }
 
     @Override

@@ -10,12 +10,13 @@
  */
 package com.cpi.workflow.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
+
 import com.cpi.workflow.service.activiti.manage.ActivitiModelService;
-import com.cpi.workflow.web.rest.util.HeaderUtil;
+import com.cpi.workflow.web.rest.util.CpiHeaderUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.jhipster.web.util.HeaderUtil;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
@@ -25,6 +26,7 @@ import org.activiti.engine.repository.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,6 +54,9 @@ public class ActivitiModelResource {
 
     private static final String ENTITY_NAME = "ActivitiDeploymentResource";
 
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
+
     @Autowired
     private ActivitiModelService activitiModelService;
 
@@ -59,7 +64,6 @@ public class ActivitiModelResource {
     private RepositoryService repositoryService;
 
     @PostMapping("/create")
-    @Timed
     public ResponseEntity<Model> createNewModel(@RequestParam(value = "name") String name,
                                                 @RequestParam(value = "description") String description,
                                                 @RequestParam(value = "key") String key,
@@ -76,12 +80,11 @@ public class ActivitiModelResource {
         }
 
         return ResponseEntity.created(new URI(request.getContextPath() + "/modeler.html?modelId=" + model.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, model.getId().toString()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, model.getId().toString()))
             .body(model);
     }
 
     @GetMapping("/edit/{modelId}")
-    @Timed
     public void editModel(@PathVariable String modelId,
                           HttpServletRequest request,
                           HttpServletResponse response) { //throws URISyntaxException {
@@ -107,11 +110,10 @@ public class ActivitiModelResource {
     }
 
     @DeleteMapping("/delete/{modelId}")
-    @Timed
     public ResponseEntity<Void> deleteModel(@PathVariable String modelId) {
         log.debug("REST request to delete Model : {}", modelId);
         repositoryService.deleteModel(modelId);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, modelId.toString())).build();
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, modelId.toString())).build();
     }
 
     @PostMapping("/deployment/{modelId}")
@@ -137,7 +139,7 @@ public class ActivitiModelResource {
             modelData.setDeploymentId(deployment.getId());
             repositoryService.saveModel(modelData);
         }
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeployAlert(ENTITY_NAME, modelId.toString())).build();
+        return ResponseEntity.ok().headers(CpiHeaderUtil.createEntityDeployAlert(applicationName, true, ENTITY_NAME, modelId.toString())).build();
     }
 
 

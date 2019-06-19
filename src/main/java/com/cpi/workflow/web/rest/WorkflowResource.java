@@ -10,7 +10,7 @@
  */
 package com.cpi.workflow.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
+
 import com.cpi.workflow.service.activiti.common.ProcessInstanceStatusBean;
 import com.cpi.workflow.service.activiti.utility.AcitivitiServiceImpl;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -45,7 +45,6 @@ public class WorkflowResource {
     private AcitivitiServiceImpl acitivitiService;
 
     @GetMapping("/create")
-    @Timed
     public ResponseEntity<String> createProcessInstance(@RequestParam(value = "processDefinitionKey", required = true) String processDefinitionKey,
                                                         @RequestParam(value = "entityId", required = true) String entityId,
                                                         @RequestParam(value = "userId", required = true) String userId) {
@@ -55,7 +54,6 @@ public class WorkflowResource {
     }
 
     @GetMapping("/get-task-list/count")
-    @Timed
     public ResponseEntity<Long> getTaskListCountForUserId(@RequestParam(value = "processDefinitionKey", required = true) String processDefinitionKey,
                                                           @RequestParam(value = "userId", required = true) String userId) {
         log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
@@ -72,7 +70,6 @@ public class WorkflowResource {
 //    }
 
     @GetMapping("/get-task-list")
-    @Timed
     public ResponseEntity<List> getTaskListForUserId(@RequestParam(value = "processDefinitionKey", required = true) String processDefinitionKey,
                                                      @RequestParam(value = "userId", required = true) String userId) {
         log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
@@ -80,7 +77,6 @@ public class WorkflowResource {
     }
 
     @GetMapping("/get-task-form-property")
-    @Timed
     public ResponseEntity<List> getTaskFormPropertyListForProcessInstanceId(@RequestParam(value = "processInstanceId", required = true) String processInstanceId) {
         log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
         return new ResponseEntity<>(acitivitiService.getTaskFormPropertyByProcessInstanceId(processInstanceId), HttpStatus.OK);
@@ -88,7 +84,6 @@ public class WorkflowResource {
 
 
     @PostMapping("/complete")
-    @Timed
     public ResponseEntity completeTaskForProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId,
                                                            @RequestBody Map<String, Object> variables ) {
         log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
@@ -103,7 +98,6 @@ public class WorkflowResource {
     }
 
     @GetMapping("/current-image")
-    @Timed
     public ResponseEntity<byte[]> getCurrentImageForProcessInstanceId(@RequestParam(value = "processInstanceId", required = true) String processInstanceId) throws IOException {
         log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
 
@@ -122,7 +116,6 @@ public class WorkflowResource {
 
 
     @GetMapping("/get-process-status")
-    @Timed
     public ResponseEntity<ProcessInstanceStatusBean> getProcessStatusForProcessInstanceId(@RequestParam(value = "processInstanceId", required = true) String processInstanceId) {
         log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
         return new ResponseEntity<>(acitivitiService.getProcessStatusForProcessInstanceId(processInstanceId), HttpStatus.OK);
@@ -130,7 +123,6 @@ public class WorkflowResource {
 
 
     @GetMapping("/activate-or-suspend")
-    @Timed
     public ResponseEntity activateOrSuspendProcessInstanceById(@RequestParam(value = "processInstanceId", required = true) String processInstanceId) {
         log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
         acitivitiService.activateOrSuspendProcessInstanceById(processInstanceId);
@@ -138,7 +130,6 @@ public class WorkflowResource {
     }
 
     @GetMapping("/delete")
-    @Timed
     public ResponseEntity deleteProcessInstanceById(@RequestParam(value = "processInstanceId", required = true) String processInstanceId) {
         log.debug("REST request to get ActivitiWorkflowFiles by criteria: ");
         acitivitiService.deleteProcessInstanceById(processInstanceId);

@@ -46,18 +46,18 @@ public class UWCertificateCompleteHandler implements JavaDelegate {
         String entryId = (String) delegateExecution.getVariable(ActivitiService.VARIABLE_FOR_ENTITY_ID);
         HistoricTaskInstance historicTaskInstance = findPreviousTask(delegateExecution.getProcessInstanceId());
         // check for the condition
-        if ( entryId != null
-            && producerService != null
-            && historicTaskInstance != null) {
-
-            // set values
-            KafkaMessage kafkaMessage = new KafkaMessage(
-                KafkaMessage.MESSAGE_TYPE_UW_CERTIFICATE,
-                entryId,
-                historicTaskInstance.getAssignee()
-            );
-
-            producerService.send(kafkaMessage);
-        }
+//        if ( entryId != null
+//            && producerService != null
+//            && historicTaskInstance != null) {
+//
+//            // set values
+//            KafkaMessage kafkaMessage = new KafkaMessage(
+//                KafkaMessage.MESSAGE_TYPE_UW_CERTIFICATE,
+//                entryId,
+//                historicTaskInstance.getAssignee()
+//            );
+//
+//            producerService.send(kafkaMessage);
+//        }
     }
 }

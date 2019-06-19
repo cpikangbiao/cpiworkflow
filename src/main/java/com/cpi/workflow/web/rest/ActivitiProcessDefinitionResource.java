@@ -10,15 +10,14 @@
  */
 package com.cpi.workflow.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
-import com.cpi.workflow.web.rest.util.HeaderUtil;
-import com.cpi.workflow.web.rest.util.PaginationUtil;
+
+import io.github.jhipster.web.util.HeaderUtil;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,6 +44,9 @@ public class ActivitiProcessDefinitionResource {
 
     private static final String ENTITY_NAME = "ActivitiDeploymentResource";
 
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
+
     public ResponseEntity<List<ProcessDefinition>> getProcessDifinitionListByProcessDefinitionKey(String processDefinitionKey) {
         ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
         List<ProcessDefinition> processDefinitions = processEngine.getRepositoryService()
@@ -68,10 +70,9 @@ public class ActivitiProcessDefinitionResource {
     }
 
     @DeleteMapping("/process-definition/{deploymentId}")
-    @Timed
     public ResponseEntity<Void> deleteProcessDefinition(@PathVariable String deploymentId){
         ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
         processEngine.getRepositoryService().deleteDeployment(deploymentId,true);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, deploymentId)).build();
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, deploymentId)).build();
     }
 }

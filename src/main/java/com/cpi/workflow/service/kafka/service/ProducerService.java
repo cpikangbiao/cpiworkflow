@@ -11,8 +11,6 @@
 package com.cpi.workflow.service.kafka.service;
 
 import com.cpi.workflow.service.kafka.channel.ProducerChannel;
-import com.cpi.workflow.service.kafka.model.KafkaMessage;
-import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Service;
@@ -32,16 +30,16 @@ public class ProducerService {
 
     private MessageChannel channel;
 
-    public ProducerService(ProducerChannel channel) {
-        this.channel = channel.messageChannel();
-    }
+//    public ProducerService(ProducerChannel channel) {
+//        this.channel = channel.messageChannel();
+//    }
 
-    public void send(KafkaMessage kafkaMessage) {
-        this.channel.send(
-            MessageBuilder
-                .withPayload(kafkaMessage)
-//                .setHeader("content-type","application/json;charset=utf-8")
-//                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_OCTET_STREAM)
-                .build());
-    }
+//    public void send(KafkaMessage kafkaMessage) {
+//        this.channel.send(
+//            MessageBuilder
+//                .withPayload(kafkaMessage)
+////                .setHeader("content-type","application/json;charset=utf-8")
+////                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_OCTET_STREAM)
+//                .build());
+//    }
 }
