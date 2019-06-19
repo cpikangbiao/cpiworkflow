@@ -1,13 +1,12 @@
 package com.cpi.workflow.repository;
 
 import com.cpi.workflow.domain.ActivitiWorkflowFile;
-import org.springframework.stereotype.Repository;
-
 import org.springframework.data.jpa.repository.*;
+import org.springframework.stereotype.Repository;
 
 
 /**
- * Spring Data JPA repository for the ActivitiWorkflowFile entity.
+ * Spring Data  repository for the ActivitiWorkflowFile entity.
  */
 @SuppressWarnings("unused")
 @Repository

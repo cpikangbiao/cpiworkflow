@@ -6,7 +6,7 @@ import com.cpi.workflow.service.dto.ActivitiWorkflowFileDTO;
 import org.mapstruct.*;
 
 /**
- * Mapper for the entity ActivitiWorkflowFile and its DTO ActivitiWorkflowFileDTO.
+ * Mapper for the entity {@link ActivitiWorkflowFile} and its DTO {@link ActivitiWorkflowFileDTO}.
  */
 @Mapper(componentModel = "spring", uses = {})
 public interface ActivitiWorkflowFileMapper extends EntityMapper<ActivitiWorkflowFileDTO, ActivitiWorkflowFile> {

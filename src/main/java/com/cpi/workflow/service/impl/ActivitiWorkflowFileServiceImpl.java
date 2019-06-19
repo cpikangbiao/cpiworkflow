@@ -7,14 +7,16 @@ import com.cpi.workflow.service.dto.ActivitiWorkflowFileDTO;
 import com.cpi.workflow.service.mapper.ActivitiWorkflowFileMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 
 /**
- * Service Implementation for managing ActivitiWorkflowFile.
+ * Service Implementation for managing {@link ActivitiWorkflowFile}.
  */
 @Service
 @Transactional
@@ -34,8 +36,8 @@ public class ActivitiWorkflowFileServiceImpl implements ActivitiWorkflowFileServ
     /**
      * Save a activitiWorkflowFile.
      *
-     * @param activitiWorkflowFileDTO the entity to save
-     * @return the persisted entity
+     * @param activitiWorkflowFileDTO the entity to save.
+     * @return the persisted entity.
      */
     @Override
     public ActivitiWorkflowFileDTO save(ActivitiWorkflowFileDTO activitiWorkflowFileDTO) {
@@ -48,8 +50,8 @@ public class ActivitiWorkflowFileServiceImpl implements ActivitiWorkflowFileServ
     /**
      * Get all the activitiWorkflowFiles.
      *
-     * @param pageable the pagination information
-     * @return the list of entities
+     * @param pageable the pagination information.
+     * @return the list of entities.
      */
     @Override
     @Transactional(readOnly = true)
@@ -59,28 +61,29 @@ public class ActivitiWorkflowFileServiceImpl implements ActivitiWorkflowFileServ
             .map(activitiWorkflowFileMapper::toDto);
     }
 
+
     /**
      * Get one activitiWorkflowFile by id.
      *
-     * @param id the id of the entity
-     * @return the entity
+     * @param id the id of the entity.
+     * @return the entity.
      */
     @Override
     @Transactional(readOnly = true)
-    public ActivitiWorkflowFileDTO findOne(Long id) {
+    public Optional<ActivitiWorkflowFileDTO> findOne(Long id) {
         log.debug("Request to get ActivitiWorkflowFile : {}", id);
-        ActivitiWorkflowFile activitiWorkflowFile = activitiWorkflowFileRepository.findOne(id);
-        return activitiWorkflowFileMapper.toDto(activitiWorkflowFile);
+        return activitiWorkflowFileRepository.findById(id)
+            .map(activitiWorkflowFileMapper::toDto);
     }
 
     /**
      * Delete the activitiWorkflowFile by id.
      *
-     * @param id the id of the entity
+     * @param id the id of the entity.
      */
     @Override
     public void delete(Long id) {
         log.debug("Request to delete ActivitiWorkflowFile : {}", id);
-        activitiWorkflowFileRepository.delete(id);
+        activitiWorkflowFileRepository.deleteById(id);
     }
 }

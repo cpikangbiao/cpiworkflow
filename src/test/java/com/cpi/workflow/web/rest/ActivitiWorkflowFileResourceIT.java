@@ -1,9 +1,7 @@
 package com.cpi.workflow.web.rest;
 
 import com.cpi.workflow.CpiworkflowApp;
-
 import com.cpi.workflow.config.SecurityBeanOverrideConfiguration;
-
 import com.cpi.workflow.domain.ActivitiWorkflowFile;
 import com.cpi.workflow.repository.ActivitiWorkflowFileRepository;
 import com.cpi.workflow.service.ActivitiWorkflowFileService;
@@ -13,20 +11,20 @@ import com.cpi.workflow.web.rest.errors.ExceptionTranslator;
 import com.cpi.workflow.service.dto.ActivitiWorkflowFileCriteria;
 import com.cpi.workflow.service.ActivitiWorkflowFileQueryService;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
+import org.springframework.validation.Validator;
 
 import javax.persistence.EntityManager;
 import java.time.Instant;
@@ -40,24 +38,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Test class for the ActivitiWorkflowFileResource REST controller.
- *
- * @see ActivitiWorkflowFileResource
+ * Integration tests for the {@Link ActivitiWorkflowFileResource} REST controller.
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {CpiworkflowApp.class, SecurityBeanOverrideConfiguration.class})
-public class ActivitiWorkflowFileResourceIntTest {
+@EmbeddedKafka
+@SpringBootTest(classes = {SecurityBeanOverrideConfiguration.class, CpiworkflowApp.class})
+public class ActivitiWorkflowFileResourceIT {
 
     private static final String DEFAULT_WORKFLOW_NAME = "AAAAAAAAAA";
     private static final String UPDATED_WORKFLOW_NAME = "BBBBBBBBBB";
 
     private static final byte[] DEFAULT_PROCESS_DEFINITION = TestUtil.createByteArray(1, "0");
-    private static final byte[] UPDATED_PROCESS_DEFINITION = TestUtil.createByteArray(2, "1");
+    private static final byte[] UPDATED_PROCESS_DEFINITION = TestUtil.createByteArray(1, "1");
     private static final String DEFAULT_PROCESS_DEFINITION_CONTENT_TYPE = "image/jpg";
     private static final String UPDATED_PROCESS_DEFINITION_CONTENT_TYPE = "image/png";
 
     private static final byte[] DEFAULT_PROCESS_IMAGE = TestUtil.createByteArray(1, "0");
-    private static final byte[] UPDATED_PROCESS_IMAGE = TestUtil.createByteArray(2, "1");
+    private static final byte[] UPDATED_PROCESS_IMAGE = TestUtil.createByteArray(1, "1");
     private static final String DEFAULT_PROCESS_IMAGE_CONTENT_TYPE = "image/jpg";
     private static final String UPDATED_PROCESS_IMAGE_CONTENT_TYPE = "image/png";
 
@@ -91,11 +87,14 @@ public class ActivitiWorkflowFileResourceIntTest {
     @Autowired
     private EntityManager em;
 
+    @Autowired
+    private Validator validator;
+
     private MockMvc restActivitiWorkflowFileMockMvc;
 
     private ActivitiWorkflowFile activitiWorkflowFile;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         final ActivitiWorkflowFileResource activitiWorkflowFileResource = new ActivitiWorkflowFileResource(activitiWorkflowFileService, activitiWorkflowFileQueryService);
@@ -103,7 +102,8 @@ public class ActivitiWorkflowFileResourceIntTest {
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
             .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter).build();
+            .setMessageConverters(jacksonMessageConverter)
+            .setValidator(validator).build();
     }
 
     /**
@@ -123,8 +123,25 @@ public class ActivitiWorkflowFileResourceIntTest {
             .uploadUser(DEFAULT_UPLOAD_USER);
         return activitiWorkflowFile;
     }
+    /**
+     * Create an updated entity for this test.
+     *
+     * This is a static method, as tests for other entities might also need it,
+     * if they test an entity which requires the current entity.
+     */
+    public static ActivitiWorkflowFile createUpdatedEntity(EntityManager em) {
+        ActivitiWorkflowFile activitiWorkflowFile = new ActivitiWorkflowFile()
+            .workflowName(UPDATED_WORKFLOW_NAME)
+            .processDefinition(UPDATED_PROCESS_DEFINITION)
+            .processDefinitionContentType(UPDATED_PROCESS_DEFINITION_CONTENT_TYPE)
+            .processImage(UPDATED_PROCESS_IMAGE)
+            .processImageContentType(UPDATED_PROCESS_IMAGE_CONTENT_TYPE)
+            .uploadTime(UPDATED_UPLOAD_TIME)
+            .uploadUser(UPDATED_UPLOAD_USER);
+        return activitiWorkflowFile;
+    }
 
-    @Before
+    @BeforeEach
     public void initTest() {
         activitiWorkflowFile = createEntity(em);
     }
@@ -174,6 +191,7 @@ public class ActivitiWorkflowFileResourceIntTest {
         assertThat(activitiWorkflowFileList).hasSize(databaseSizeBeforeCreate);
     }
 
+
     @Test
     @Transactional
     public void getAllActivitiWorkflowFiles() throws Exception {
@@ -193,7 +211,7 @@ public class ActivitiWorkflowFileResourceIntTest {
             .andExpect(jsonPath("$.[*].uploadTime").value(hasItem(DEFAULT_UPLOAD_TIME.toString())))
             .andExpect(jsonPath("$.[*].uploadUser").value(hasItem(DEFAULT_UPLOAD_USER.toString())));
     }
-
+    
     @Test
     @Transactional
     public void getActivitiWorkflowFile() throws Exception {
@@ -331,24 +349,30 @@ public class ActivitiWorkflowFileResourceIntTest {
         defaultActivitiWorkflowFileShouldNotBeFound("uploadUser.specified=false");
     }
     /**
-     * Executes the search, and checks that the default entity is returned
+     * Executes the search, and checks that the default entity is returned.
      */
     private void defaultActivitiWorkflowFileShouldBeFound(String filter) throws Exception {
         restActivitiWorkflowFileMockMvc.perform(get("/api/activiti-workflow-files?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(activitiWorkflowFile.getId().intValue())))
-            .andExpect(jsonPath("$.[*].workflowName").value(hasItem(DEFAULT_WORKFLOW_NAME.toString())))
+            .andExpect(jsonPath("$.[*].workflowName").value(hasItem(DEFAULT_WORKFLOW_NAME)))
             .andExpect(jsonPath("$.[*].processDefinitionContentType").value(hasItem(DEFAULT_PROCESS_DEFINITION_CONTENT_TYPE)))
             .andExpect(jsonPath("$.[*].processDefinition").value(hasItem(Base64Utils.encodeToString(DEFAULT_PROCESS_DEFINITION))))
             .andExpect(jsonPath("$.[*].processImageContentType").value(hasItem(DEFAULT_PROCESS_IMAGE_CONTENT_TYPE)))
             .andExpect(jsonPath("$.[*].processImage").value(hasItem(Base64Utils.encodeToString(DEFAULT_PROCESS_IMAGE))))
             .andExpect(jsonPath("$.[*].uploadTime").value(hasItem(DEFAULT_UPLOAD_TIME.toString())))
-            .andExpect(jsonPath("$.[*].uploadUser").value(hasItem(DEFAULT_UPLOAD_USER.toString())));
+            .andExpect(jsonPath("$.[*].uploadUser").value(hasItem(DEFAULT_UPLOAD_USER)));
+
+        // Check, that the count call also returns 1
+        restActivitiWorkflowFileMockMvc.perform(get("/api/activiti-workflow-files/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().string("1"));
     }
 
     /**
-     * Executes the search, and checks that the default entity is not returned
+     * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultActivitiWorkflowFileShouldNotBeFound(String filter) throws Exception {
         restActivitiWorkflowFileMockMvc.perform(get("/api/activiti-workflow-files?sort=id,desc&" + filter))
@@ -356,6 +380,12 @@ public class ActivitiWorkflowFileResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restActivitiWorkflowFileMockMvc.perform(get("/api/activiti-workflow-files/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().string("0"));
     }
 
 
@@ -372,10 +402,11 @@ public class ActivitiWorkflowFileResourceIntTest {
     public void updateActivitiWorkflowFile() throws Exception {
         // Initialize the database
         activitiWorkflowFileRepository.saveAndFlush(activitiWorkflowFile);
+
         int databaseSizeBeforeUpdate = activitiWorkflowFileRepository.findAll().size();
 
         // Update the activitiWorkflowFile
-        ActivitiWorkflowFile updatedActivitiWorkflowFile = activitiWorkflowFileRepository.findOne(activitiWorkflowFile.getId());
+        ActivitiWorkflowFile updatedActivitiWorkflowFile = activitiWorkflowFileRepository.findById(activitiWorkflowFile.getId()).get();
         // Disconnect from session so that the updates on updatedActivitiWorkflowFile are not directly saved in db
         em.detach(updatedActivitiWorkflowFile);
         updatedActivitiWorkflowFile
@@ -414,15 +445,15 @@ public class ActivitiWorkflowFileResourceIntTest {
         // Create the ActivitiWorkflowFile
         ActivitiWorkflowFileDTO activitiWorkflowFileDTO = activitiWorkflowFileMapper.toDto(activitiWorkflowFile);
 
-        // If the entity doesn't have an ID, it will be created instead of just being updated
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restActivitiWorkflowFileMockMvc.perform(put("/api/activiti-workflow-files")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(activitiWorkflowFileDTO)))
-            .andExpect(status().isCreated());
+            .andExpect(status().isBadRequest());
 
         // Validate the ActivitiWorkflowFile in the database
         List<ActivitiWorkflowFile> activitiWorkflowFileList = activitiWorkflowFileRepository.findAll();
-        assertThat(activitiWorkflowFileList).hasSize(databaseSizeBeforeUpdate + 1);
+        assertThat(activitiWorkflowFileList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
@@ -430,12 +461,13 @@ public class ActivitiWorkflowFileResourceIntTest {
     public void deleteActivitiWorkflowFile() throws Exception {
         // Initialize the database
         activitiWorkflowFileRepository.saveAndFlush(activitiWorkflowFile);
+
         int databaseSizeBeforeDelete = activitiWorkflowFileRepository.findAll().size();
 
-        // Get the activitiWorkflowFile
+        // Delete the activitiWorkflowFile
         restActivitiWorkflowFileMockMvc.perform(delete("/api/activiti-workflow-files/{id}", activitiWorkflowFile.getId())
             .accept(TestUtil.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk());
+            .andExpect(status().isNoContent());
 
         // Validate the database is empty
         List<ActivitiWorkflowFile> activitiWorkflowFileList = activitiWorkflowFileRepository.findAll();
